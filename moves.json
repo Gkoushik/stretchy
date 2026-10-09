@@ -5,7 +5,7 @@
       "name": "Eyes",
       "moves": [
         { "key": "ecirc", "label": "Eye circles",       "detail": "Follow the dot, keep your head still", "type": "flow", "cycle": 4, "eyes": true },
-        { "key": "eud",   "label": "Look up and down",  "detail": "Follow the dot, 2s each way",          "type": "hold", "cycle": 6, "eyes": true, "sides": ["Up", "Down"] },
+        { "key": "eud",   "label": "Look up and down",  "detail": "Follow the dot up, then down",          "type": "hold", "cycle": 4, "eyes": true, "sides": ["Up", "Down"] },
         { "key": "elr",   "label": "Look side to side", "detail": "Follow the dot, 2s each way",          "type": "hold", "cycle": 6, "eyes": true, "sides": ["Left", "Right"] },
         { "key": "far",   "label": "Look far away",     "detail": "Find something 20 ft away · 20s",      "type": "hold", "cycle": 6, "eyes": true }
       ]

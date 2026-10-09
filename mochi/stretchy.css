@@ -63,8 +63,8 @@
   0%,50%,100%{transform:translateY(0) scale(0);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
   12%,38%{transform:translateY(-78px) scale(1);animation-timing-function:cubic-bezier(.45,0,.55,1)}
   62%,88%{transform:translateY(78px) scale(1);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
-.mochi.eud .pu {animation:eudP 6s infinite}
-.mochi.eud .tgt{animation:eudD 6s infinite}
+.mochi.eud .pu {animation:eudP 4s infinite}
+.mochi.eud .tgt{animation:eudD 4s infinite}
 
 /* Look side to side. */
 @keyframes elrP{
