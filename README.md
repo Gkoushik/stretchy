@@ -88,8 +88,8 @@ The exercise catalogue lives in [`moves.json`](moves.json):
 | Field | Meaning |
 |---|---|
 | `key` | Animation in `mochi/stretchy.css`: `ecirc`, `eud`, `elr`, `far`, `turn`, `tilt`, `roll`, `shrug`, `circles`, `cross`, `reach`, `side`, `yawn`. |
-| `label` | Title on the card and in the routine editor. |
-| `detail` | Caption line under the title (5 to 7 words works best). |
+| `label` | Name in the routine editor and the VoiceOver announcement. |
+| `detail` | Short instruction read out by VoiceOver. |
 | `type` | `hold`, `reps` or `flow`. |
 | `cycle` | Seconds per animation loop (6 for holds, 3 or 4 for reps). |
 | `sides` | Two labels shown in the side chip, from the viewer's side (copy the character like a mirror). |
