@@ -7,13 +7,11 @@ svg.mochi{width:100%;height:100%;display:block}
 </head><body>
 <svg class="mochi" id="m" viewBox="215 26 250 294" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><!--MOCHI_BODY--></svg>
 <script>
-// Cropped to the character. Eye moves zoom to the face so the eyes and target dot read clearly.
-const VIEWBOX = { body: '215 26 250 294', eyes: '270 66 140 150' };
+// Same framing for every move so the character never changes size.
 const svg = document.getElementById('m');
 
 // o = {key, eyes?}
 window.setMove = function (o) {
-  svg.setAttribute('viewBox', o.eyes ? VIEWBOX.eyes : VIEWBOX.body);
   svg.setAttribute('class', 'mochi');
   void svg.getBoundingClientRect();               // restart animations
   svg.setAttribute('class', ['mochi', o.key, o.eyes ? 'eyes-open' : ''].join(' ').trim());
