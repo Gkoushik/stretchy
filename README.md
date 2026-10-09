@@ -74,6 +74,7 @@ Click the character in the menu bar:
 | **Show every…** | Interval between breaks (1 min / 15 / 30 / 45 min / 1 h / 2 h). |
 | **Show for…** | How long the character stays visible (15 s / 30 s / 1 min / 2 min). |
 | **Exercise order** | In order or shuffle. |
+| **Bedtime yawn** | The big yawn is night-only. Turn it on or off, pick a start time (9 PM to 12 AM, default 10 PM) and how often it repeats (15 min, 30 min or 1 hour, default 15 min). It runs until 6 AM and never appears in the daytime rotation. |
 | **Size** | Small / Medium / Large. |
 | **Quit** | Quit Stretchy. |
 

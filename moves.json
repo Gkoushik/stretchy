@@ -31,7 +31,7 @@
       "moves": [
         { "key": "reach", "label": "Reach up",     "detail": "Stretch tall · hold 15s",          "type": "hold", "cycle": 6 },
         { "key": "side",  "label": "Side bend",    "detail": "Arm over, lean · 15s each side",   "type": "hold", "cycle": 6, "sides": ["Lean right", "Lean left"] },
-        { "key": "yawn",  "label": "Chest opener", "detail": "Arms wide, chest up, big yawn",    "type": "hold", "cycle": 6 }
+        { "key": "yawn",  "label": "Big yawn (bedtime only)", "detail": "Arms wide, chest up, big yawn",    "type": "hold", "cycle": 6 }
       ]
     }
   ]

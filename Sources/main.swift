@@ -314,6 +314,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
     private var breakShowing = false
 
     private var currentKey = "turn"
+    private var dayKey = ""              // position in the daytime rotation
+
+    // Bedtime yawn: night-only, on its own repeat interval. Settings persist.
+    private let bedtimeKey = "yawn"
+    private let bedtimeEndHour = 6
+    private var bedtimeEnabled = UserDefaults.standard.object(forKey: "bedtimeEnabled") as? Bool ?? true {
+        didSet { UserDefaults.standard.set(bedtimeEnabled, forKey: "bedtimeEnabled") }
+    }
+    private var bedtimeHour = UserDefaults.standard.object(forKey: "bedtimeHour") as? Int ?? 22 {
+        didSet { UserDefaults.standard.set(bedtimeHour, forKey: "bedtimeHour") }
+    }
+    private var bedtimeRepeat = UserDefaults.standard.object(forKey: "bedtimeRepeat") as? Double ?? 15 * 60 {
+        didSet { UserDefaults.standard.set(bedtimeRepeat, forKey: "bedtimeRepeat") }
+    }
+    private var bedtimeTimer: Timer?
+    private var lastBedtimeShow: Date?
+    private var showingBedtime = false
+    private var bedtimeOnItem: NSMenuItem!
+    private var bedtimeHourItems: [Int: NSMenuItem] = [:]
+    private var bedtimeRepeatItems: [Int: NSMenuItem] = [:]
 
     // Menu refs
     private var nextItem: NSMenuItem!
@@ -350,6 +370,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
         buildMenu()
         preparePanel()
         scheduleReminder()
+        startBedtimeWatch()
     }
 
     // MARK: Popup
@@ -391,7 +412,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
     func userContentController(_ c: WKUserContentController, didReceive message: WKScriptMessage) {
         switch message.body as? String {
         case "done":   hideBreak()
-        case "snooze": snooze()
+        case "snooze": snoozeAny()
         default: break
         }
     }
@@ -399,7 +420,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
     private func applyMove() {
         guard webReady, let mv = MochiMoves.move(currentKey) else { return }
         var payload: [String: Any] = [
-            "key": mv.key, "label": mv.label, "detail": mv.detail ?? "",
+            "key": mv.key,
+            "label": showingBedtime ? "Bedtime stretch" : mv.label,
+            "detail": showingBedtime ? "It's late · big yawn, then wind down" : (mv.detail ?? ""),
             "cycle": mv.cycle ?? 6, "eyes": mv.eyes ?? false, "showSeconds": showSeconds,
         ]
         if let sides = mv.sides { payload["sides"] = sides }
@@ -448,6 +471,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
     private func hideBreak() {
         hideTimer?.invalidate(); hideTimer = nil
         breakShowing = false
+        showingBedtime = false
         updateGlyph()
         guard let panel = panel, panel.isVisible else { return }
         let f = panel.frame
@@ -522,15 +546,58 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
         button.image = MenuBarGlyph.head(fill: fraction)
     }
 
+    /// Daytime rotation. The yawn is bedtime-only, so it never appears here.
     private func nextExercise() {
-        let keys = store.order
+        var keys = store.order.filter { $0 != bedtimeKey }
+        if keys.isEmpty { keys = store.order }
         guard !keys.isEmpty else { return }
         if shuffle {
-            currentKey = keys.filter { $0 != currentKey }.randomElement() ?? keys[0]
-        } else if let i = keys.firstIndex(of: currentKey) {
-            currentKey = keys[(i + 1) % keys.count]
+            dayKey = keys.filter { $0 != dayKey }.randomElement() ?? keys[0]
+        } else if let i = keys.firstIndex(of: dayKey) {
+            dayKey = keys[(i + 1) % keys.count]
         } else {
-            currentKey = keys[0]
+            dayKey = keys[0]
+        }
+        currentKey = dayKey
+    }
+
+    // MARK: Bedtime yawn
+
+    private func startBedtimeWatch() {
+        bedtimeTimer?.invalidate()
+        bedtimeTimer = Timer.scheduledTimer(withTimeInterval: 30, repeats: true) { [weak self] _ in
+            Task { @MainActor in self?.checkBedtime() }
+        }
+        checkBedtime()
+    }
+
+    /// Night window runs from the bedtime hour until 6 AM.
+    private func isNight(_ date: Date = Date()) -> Bool {
+        let h = Calendar.current.component(.hour, from: date)
+        if bedtimeHour > bedtimeEndHour { return h >= bedtimeHour || h < bedtimeEndHour }
+        return h >= bedtimeHour && h < bedtimeEndHour
+    }
+
+    private func checkBedtime() {
+        guard bedtimeEnabled, isNight(), !breakShowing, MochiMoves.move(bedtimeKey) != nil else { return }
+        if let last = lastBedtimeShow, Date().timeIntervalSince(last) < bedtimeRepeat { return }
+        showBedtime()
+    }
+
+    private func showBedtime() {
+        lastBedtimeShow = Date()
+        showingBedtime = true
+        currentKey = bedtimeKey
+        showBreak(advance: false)
+    }
+
+    /// Snoozing a bedtime yawn delays only the bedtime schedule, not the daytime one.
+    private func snoozeAny() {
+        if showingBedtime {
+            hideBreak()
+            lastBedtimeShow = Date().addingTimeInterval(snoozeSeconds - bedtimeRepeat)
+        } else {
+            snooze()
         }
     }
 
@@ -638,6 +705,37 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
         orderParent.submenu = orderMenu
         menu.addItem(orderParent)
 
+        let bedParent = NSMenuItem(title: "Bedtime yawn", action: nil, keyEquivalent: "")
+        let bedMenu = NSMenu()
+        bedtimeOnItem = NSMenuItem(title: "On", action: #selector(toggleBedtime), keyEquivalent: "")
+        bedtimeOnItem.target = self
+        bedMenu.addItem(bedtimeOnItem)
+        bedMenu.addItem(.separator())
+        let startsHeader = NSMenuItem(title: "Starts at", action: nil, keyEquivalent: ""); startsHeader.isEnabled = false
+        bedMenu.addItem(startsHeader)
+        for (label, hour) in [("9:00 PM", 21), ("10:00 PM", 22), ("11:00 PM", 23), ("12:00 AM", 0)] {
+            let item = NSMenuItem(title: "   " + label, action: #selector(setBedtimeHour(_:)), keyEquivalent: "")
+            item.target = self; item.representedObject = hour
+            bedtimeHourItems[hour] = item
+            bedMenu.addItem(item)
+        }
+        let repeatHeader = NSMenuItem(title: "Repeat every", action: nil, keyEquivalent: ""); repeatHeader.isEnabled = false
+        bedMenu.addItem(repeatHeader)
+        for (label, secs) in [("15 minutes", 15.0 * 60), ("30 minutes", 30.0 * 60), ("1 hour", 60.0 * 60)] {
+            let item = NSMenuItem(title: "   " + label, action: #selector(setBedtimeRepeat(_:)), keyEquivalent: "")
+            item.target = self; item.representedObject = secs
+            bedtimeRepeatItems[Int(secs)] = item
+            bedMenu.addItem(item)
+        }
+        bedMenu.addItem(.separator())
+        let until = NSMenuItem(title: "Runs until 6:00 AM", action: nil, keyEquivalent: ""); until.isEnabled = false
+        bedMenu.addItem(until)
+        let preview = NSMenuItem(title: "Preview now", action: #selector(previewBedtime), keyEquivalent: "")
+        preview.target = self
+        bedMenu.addItem(preview)
+        bedParent.submenu = bedMenu
+        menu.addItem(bedParent)
+
         menu.addItem(.separator())
 
         let sizeParent = NSMenuItem(title: "Size", action: nil, keyEquivalent: "")
@@ -664,13 +762,30 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
         for (secs, item) in durationItems { item.state = (Int(showSeconds) == secs) ? .on : .off }
         orderInOrderItem.state = shuffle ? .off : .on
         orderShuffleItem.state = shuffle ? .on : .off
+        bedtimeOnItem.state = bedtimeEnabled ? .on : .off
+        for (h, item) in bedtimeHourItems { item.state = (h == bedtimeHour) ? .on : .off }
+        for (s, item) in bedtimeRepeatItems { item.state = (s == Int(bedtimeRepeat)) ? .on : .off }
     }
 
     // MARK: Actions
 
     @objc private func stretchNow() { showBreak() }
     @objc private func stopCurrent() { hideBreak() }
-    @objc private func snoozeCurrent() { snooze() }
+    @objc private func snoozeCurrent() { snoozeAny() }
+
+    @objc private func toggleBedtime() { bedtimeEnabled.toggle(); refreshStates(); checkBedtime() }
+
+    @objc private func setBedtimeHour(_ sender: NSMenuItem) {
+        guard let h = sender.representedObject as? Int else { return }
+        bedtimeHour = h; refreshStates(); checkBedtime()
+    }
+
+    @objc private func setBedtimeRepeat(_ sender: NSMenuItem) {
+        guard let secs = sender.representedObject as? Double else { return }
+        bedtimeRepeat = secs; refreshStates()
+    }
+
+    @objc private func previewBedtime() { showBedtime() }
 
     /// Stop and Snooze are only enabled while a break is on screen.
     func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
