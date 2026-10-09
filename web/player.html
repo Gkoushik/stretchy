@@ -1,79 +1,21 @@
 <!doctype html><html><head><meta charset="utf-8">
-<meta name="color-scheme" content="light dark">
 <style>
-:root{--fg:#2A1A12;--fg2:rgba(42,26,18,.62);--track:rgba(0,0,0,.10);--accent:#E8553C;--btn:rgba(0,0,0,.07)}
-@media (prefers-color-scheme:dark){:root{--fg:#F4ECE6;--fg2:rgba(244,236,230,.68);--track:rgba(255,255,255,.16);--btn:rgba(255,255,255,.13)}}
-html,body{margin:0;height:100%;background:transparent;overflow:hidden;color:var(--fg);
-  font:12px -apple-system,system-ui,sans-serif;-webkit-user-select:none;cursor:default}
-#card{display:flex;flex-direction:column;height:100%;box-sizing:border-box;padding:6px 10px 10px}
-#stage{flex:1;min-height:0;position:relative}
+html,body{margin:0;height:100%;background:transparent;overflow:hidden}
 svg.mochi{width:100%;height:100%;display:block}
-#chip{position:absolute;bottom:2px;left:0;font-size:10px;font-weight:600;padding:2px 7px;border-radius:9px;
-  background:var(--btn);opacity:0;transition:opacity .2s}
-#chip.on{opacity:1}
-#title{font-weight:700;font-size:13px;text-align:center;line-height:1.2}
-#detail{font-size:11px;color:var(--fg2);text-align:center;margin-top:2px;line-height:1.25}
-#dots{text-align:center;letter-spacing:3px;font-size:9px;color:var(--accent);height:11px;margin-top:3px}
-#bar{height:3px;border-radius:2px;background:var(--track);margin:5px 2px 8px;overflow:hidden}
-#fill{height:100%;width:100%;background:var(--accent);transform-origin:left center}
-#btns{display:flex;gap:6px}
-button{flex:1;font:inherit;font-weight:600;border:0;border-radius:7px;padding:5px 0;background:var(--btn);color:var(--fg)}
-button.primary{background:var(--accent);color:#fff}
-button:active{filter:brightness(.9)}
 </style>
 <style>/*STRETCHY_CSS*/</style>
-</head><body><div id="card">
-  <div id="stage"><span id="chip"></span>
-    <svg class="mochi" id="m" viewBox="215 26 250 294" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><!--MOCHI_BODY--></svg>
-  </div>
-  <div id="title"></div>
-  <div id="detail"></div>
-  <div id="dots"></div>
-  <div id="bar"><div id="fill"></div></div>
-  <div id="btns"><button id="snooze" title="Snooze 5 minutes">Snooze</button><button id="done" class="primary">Done ✓</button></div>
-</div>
+</head><body>
+<svg class="mochi" id="m" viewBox="215 26 250 294" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><!--MOCHI_BODY--></svg>
 <script>
-// Cropped to the character (about 3x larger than the original 680-wide canvas).
+// Cropped to the character. Eye moves zoom to the face so the eyes and target dot read clearly.
 const VIEWBOX = { body: '215 26 250 294', eyes: '270 66 140 150' };
-const $ = id => document.getElementById(id);
-const svg = $('m');
-const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-let timers = [];
+const svg = document.getElementById('m');
 
-function post(msg) { try { webkit.messageHandlers.stretchy.postMessage(msg); } catch (e) {} }
-$('done').onclick = () => post('done');
-$('snooze').onclick = () => post('snooze');
-
-// o = {key, label, detail, cycle, sides?, reps?, eyes?, showSeconds}
+// o = {key, eyes?}
 window.setMove = function (o) {
-  timers.forEach(clearInterval); timers = [];
   svg.setAttribute('viewBox', o.eyes ? VIEWBOX.eyes : VIEWBOX.body);
   svg.setAttribute('class', 'mochi');
   void svg.getBoundingClientRect();               // restart animations
   svg.setAttribute('class', ['mochi', o.key, o.eyes ? 'eyes-open' : ''].join(' ').trim());
-
-  $('title').textContent = o.label || '';
-  $('detail').textContent = o.detail || '';
-
-  const fill = $('fill');
-  fill.style.transition = 'none'; fill.style.transform = 'scaleX(1)'; void fill.offsetWidth;
-  fill.style.transition = 'transform ' + (o.showSeconds || 30) + 's linear';
-  fill.style.transform = 'scaleX(0)';
-
-  const chip = $('chip');
-  chip.className = ''; chip.textContent = '';
-  if (o.sides && o.sides.length === 2) {
-    let i = 0; chip.textContent = o.sides[0]; chip.className = 'on';
-    if (!reduce) timers.push(setInterval(() => { i ^= 1; chip.textContent = o.sides[i]; }, o.cycle * 500));
-  }
-
-  const dots = $('dots');
-  dots.textContent = '';
-  if (o.reps) {
-    let n = 1;
-    const draw = () => { const k = Math.min(n, o.reps); dots.textContent = '●'.repeat(k) + '○'.repeat(o.reps - k); };
-    draw();
-    if (!reduce) timers.push(setInterval(() => { n++; draw(); }, o.cycle * 1000));
-  }
 };
 </script></body></html>

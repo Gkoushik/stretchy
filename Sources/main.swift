@@ -169,12 +169,12 @@ enum BuddySize: String, CaseIterable {
     case small  = "Small"
     case medium = "Medium"
     case large  = "Large"
-    /// Card size: character stage plus caption, progress bar and buttons.
+    /// Character only, matching the 250 x 294 viewBox.
     var size: NSSize {
         switch self {
-        case .small:  return NSSize(width: 150, height: 270)
-        case .medium: return NSSize(width: 190, height: 320)
-        case .large:  return NSSize(width: 240, height: 380)
+        case .small:  return NSSize(width: 120, height: 141)
+        case .medium: return NSSize(width: 160, height: 188)
+        case .large:  return NSSize(width: 210, height: 247)
         }
     }
 }
@@ -190,28 +190,14 @@ final class OverlayPanel: NSPanel {
         level = .floating
         backgroundColor = .clear
         isOpaque = false
-        hasShadow = true
+        hasShadow = false
+        ignoresMouseEvents = true
         hidesOnDeactivate = false
         collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary]
         self.contentView = contentView
     }
-    // Never take keyboard focus away from what the user is doing.
     override var canBecomeKey: Bool { false }
     override var canBecomeMain: Bool { false }
-}
-
-/// Lets the Done/Snooze buttons respond to the first click in a non-key panel.
-final class ClickThroughWebView: WKWebView {
-    override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
-}
-
-/// Weak proxy so the web view's user content controller does not retain the app delegate.
-final class ScriptMessageProxy: NSObject, WKScriptMessageHandler {
-    weak var target: WKScriptMessageHandler?
-    init(_ target: WKScriptMessageHandler) { self.target = target }
-    func userContentController(_ c: WKUserContentController, didReceive message: WKScriptMessage) {
-        target?.userContentController(c, didReceive: message)
-    }
 }
 
 // MARK: - Menu bar glyph
@@ -287,12 +273,10 @@ private let durationOptions: [(label: String, seconds: TimeInterval)] = [
     ("2 minutes",  120),
 ]
 
-private let snoozeSeconds: TimeInterval = 5 * 60
-
 // MARK: - App delegate
 
 @MainActor
-final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, WKScriptMessageHandler, NSMenuDelegate {
+final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, NSMenuDelegate {
     private var statusItem: NSStatusItem!
     private var panel: OverlayPanel?
     private var webView: WKWebView!
@@ -310,7 +294,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
     private var hideTimer: Timer?
     private var glyphTimer: Timer?
     private var nextFireDate: Date?
-    private var cycleLength: TimeInterval = 60 * 60   // length of the current countdown (interval or snooze)
+    private var cycleLength: TimeInterval = 60 * 60   // length of the current countdown
     private var breakShowing = false
 
     private var currentKey = "turn"
@@ -377,25 +361,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
 
     private func preparePanel() {
         let s = buddySize.size
-        let container = NSVisualEffectView(frame: NSRect(origin: .zero, size: s))
-        container.material = .popover
-        container.blendingMode = .behindWindow
-        container.state = .active
-        container.wantsLayer = true
-        container.layer?.cornerRadius = 14
-        container.layer?.masksToBounds = true
-
-        let config = WKWebViewConfiguration()
-        config.userContentController.add(ScriptMessageProxy(self), name: "stretchy")
-        let web = ClickThroughWebView(frame: NSRect(origin: .zero, size: s), configuration: config)
+        let web = WKWebView(frame: NSRect(origin: .zero, size: s), configuration: WKWebViewConfiguration())
         web.navigationDelegate = self
         web.setValue(false, forKey: "drawsBackground")
+        web.wantsLayer = true
+        web.layer?.backgroundColor = NSColor.clear.cgColor
         web.autoresizingMask = [.width, .height]
         web.setAccessibilityElement(false)   // the announcement carries the content for VoiceOver
         self.webView = web
-        container.addSubview(web)
 
-        let panel = OverlayPanel(contentView: container, size: s)
+        let panel = OverlayPanel(contentView: web, size: s)
         self.panel = panel
 
         guard let url = Bundle.main.url(forResource: "player", withExtension: "html") else {
@@ -409,38 +384,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
         applyMove()
     }
 
-    func userContentController(_ c: WKUserContentController, didReceive message: WKScriptMessage) {
-        switch message.body as? String {
-        case "done":   hideBreak()
-        case "snooze": snoozeAny()
-        default: break
-        }
-    }
-
     private func applyMove() {
         guard webReady, let mv = MochiMoves.move(currentKey) else { return }
-        var payload: [String: Any] = [
-            "key": mv.key,
-            "label": showingBedtime ? "Bedtime stretch" : mv.label,
-            "detail": showingBedtime ? "It's late · big yawn, then wind down" : (mv.detail ?? ""),
-            "cycle": mv.cycle ?? 6, "eyes": mv.eyes ?? false, "showSeconds": showSeconds,
-        ]
-        if let sides = mv.sides { payload["sides"] = sides }
-        if let reps = mv.reps { payload["reps"] = reps }
+        let payload: [String: Any] = ["key": mv.key, "eyes": mv.eyes ?? false]
         guard let data = try? JSONSerialization.data(withJSONObject: payload),
               let json = String(data: data, encoding: .utf8) else { return }
         webView.evaluateJavaScript("setMove(\(json))", completionHandler: nil)
     }
 
-    /// The popup hangs just below the Stretchy icon in the menu bar.
+    /// Resting spot: top-right corner of the screen with the menu bar.
     private func restingFrame() -> NSRect {
         let s = buddySize.size
-        let buttonFrame = statusItem.button?.window?.frame
         let screen = statusItem.button?.window?.screen ?? NSScreen.main
         let vf = screen?.visibleFrame ?? NSRect(x: 0, y: 0, width: 1440, height: 900)
-        let anchorX = buttonFrame?.midX ?? (vf.maxX - s.width / 2 - 16)
-        let x = min(max(anchorX - s.width / 2, vf.minX + 8), vf.maxX - s.width - 8)
-        return NSRect(x: x, y: vf.maxY - s.height - 6, width: s.width, height: s.height)
+        return NSRect(x: vf.maxX - s.width - 16, y: vf.maxY - s.height - 16, width: s.width, height: s.height)
+    }
+
+    /// Just past the right edge of the screen, for the slide in and out.
+    private func offscreenFrame(_ rest: NSRect) -> NSRect {
+        let vf = (statusItem.button?.window?.screen ?? NSScreen.main)?.visibleFrame ?? rest
+        return NSRect(x: vf.maxX + 4, y: rest.minY, width: rest.width, height: rest.height)
     }
 
     private func showBreak(advance: Bool = true) {
@@ -453,10 +416,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
 
         let rest = restingFrame()
         panel.alphaValue = 0
-        panel.setFrame(reduceMotion ? rest : rest.offsetBy(dx: 0, dy: 16), display: false)
+        panel.setFrame(reduceMotion ? rest : offscreenFrame(rest), display: false)
         panel.orderFrontRegardless()
         NSAnimationContext.runAnimationGroup { ctx in
-            ctx.duration = reduceMotion ? 0.25 : 0.5
+            ctx.duration = reduceMotion ? 0.25 : 0.45
             ctx.timingFunction = CAMediaTimingFunction(controlPoints: 0.2, 0.9, 0.25, 1.0)
             panel.animator().alphaValue = 1
             if !reduceMotion { panel.animator().setFrame(rest, display: true) }
@@ -478,8 +441,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
         NSAnimationContext.runAnimationGroup({ ctx in
             ctx.duration = reduceMotion ? 0.2 : 0.35
             ctx.timingFunction = CAMediaTimingFunction(controlPoints: 0.4, 0, 1, 1)
-            panel.animator().alphaValue = 0
-            if !reduceMotion { panel.animator().setFrame(f.offsetBy(dx: 0, dy: 16), display: true) }
+            if !reduceMotion { panel.animator().setFrame(self.offscreenFrame(f), display: true) }
+            else { panel.animator().alphaValue = 0 }
         }, completionHandler: {
             panel.orderOut(nil)
         })
@@ -518,19 +481,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
         }
         updateGlyph()
         updateNextItem()
-    }
-
-    /// Show the same exercise again in 5 minutes, then resume the regular schedule.
-    private func snooze() {
-        hideBreak()
-        startCountdown(snoozeSeconds)
-        reminderTimer = Timer.scheduledTimer(withTimeInterval: snoozeSeconds, repeats: false) { [weak self] _ in
-            Task { @MainActor in
-                guard let self else { return }
-                self.scheduleReminder()
-                self.showBreak(advance: false)
-            }
-        }
     }
 
     private func updateGlyph() {
@@ -589,16 +539,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
         showingBedtime = true
         currentKey = bedtimeKey
         showBreak(advance: false)
-    }
-
-    /// Snoozing a bedtime yawn delays only the bedtime schedule, not the daytime one.
-    private func snoozeAny() {
-        if showingBedtime {
-            hideBreak()
-            lastBedtimeShow = Date().addingTimeInterval(snoozeSeconds - bedtimeRepeat)
-        } else {
-            snooze()
-        }
     }
 
     // MARK: Countdown display (menu)
@@ -661,10 +601,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
         let stop = NSMenuItem(title: "Stop current exercise", action: #selector(stopCurrent), keyEquivalent: ".")
         stop.target = self
         menu.addItem(stop)
-
-        let snz = NSMenuItem(title: "Snooze 5 minutes", action: #selector(snoozeCurrent), keyEquivalent: "z")
-        snz.target = self
-        menu.addItem(snz)
 
         let edit = NSMenuItem(title: "Edit routine… (drag to reorder)",
                               action: #selector(openRoutineEditor), keyEquivalent: "e")
@@ -771,7 +707,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
 
     @objc private func stretchNow() { showBreak() }
     @objc private func stopCurrent() { hideBreak() }
-    @objc private func snoozeCurrent() { snoozeAny() }
 
     @objc private func toggleBedtime() { bedtimeEnabled.toggle(); refreshStates(); checkBedtime() }
 
@@ -787,9 +722,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
 
     @objc private func previewBedtime() { showBedtime() }
 
-    /// Stop and Snooze are only enabled while a break is on screen.
+    /// Stop is only enabled while a break is on screen.
     func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
-        if menuItem.action == #selector(stopCurrent) || menuItem.action == #selector(snoozeCurrent) {
+        if menuItem.action == #selector(stopCurrent) {
             return breakShowing
         }
         return true
