@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="mochi roll g-neck" viewBox="0 0 680 330">
+<style>.mochi *{transform-box:view-box}
+.mochi .hn,.mochi .hs,.mochi .he,.mochi .eo{opacity:0;transition:opacity .3s}.mochi .ec{transition:opacity .3s}
+.mochi.g-neck .hn,.mochi.g-sh .hs,.mochi.g-eye .he,.mochi.g-eye .eo{opacity:1}.mochi.g-eye .ec{opacity:0}
+.mochi.no-guides .hn,.mochi.no-guides .hs,.mochi.no-guides .he{opacity:0}
+.mochi .bd{transform-origin:340px 296px}.mochi .hd{transform-origin:340px 196px}
+.mochi .al{transform-origin:296px 222px}.mochi .ar{transform-origin:384px 222px}.mochi .mo{transform-origin:340px 160px}
+.mochi .chL{transform-origin:306px 156px}.mochi .chR{transform-origin:374px 156px}
+.mochi.ecirc .pu{animation:mEC 1.5s linear infinite}.mochi.eud .pu{animation:mEUD 3s ease-in-out infinite}.mochi.elr .pu{animation:mELR 3s ease-in-out infinite}
+.mochi.turn .fc{animation:mTurnF 3s ease-in-out infinite}.mochi.turn .ea{animation:mTurnE 3s ease-in-out infinite}.mochi.turn .chL{animation:mChL 3s ease-in-out infinite}.mochi.turn .chR{animation:mChR 3s ease-in-out infinite}
+.mochi.tilt .hd{animation:mTilt 3s ease-in-out infinite}
+.mochi.roll .hd{animation:mRoll 4s ease-in-out infinite}.mochi.roll .fc{animation:mRollF 4s ease-in-out infinite}
+.mochi.shrug .al,.mochi.shrug .ar{animation:mShrugA 3s ease-in-out infinite}.mochi.shrug .hd{animation:mShrugH 3s ease-in-out infinite}
+.mochi.circles .al{animation:mCircL 1.5s linear infinite}.mochi.circles .ar{animation:mCircR 1.5s linear infinite}
+.mochi.cross .al{animation:mCrossL 3s ease-in-out infinite}.mochi.cross .ar{animation:mCrossR 3s ease-in-out infinite}.mochi.cross .bd{animation:mCrossB 3s ease-in-out infinite}
+.mochi.reach .bd{animation:mReach 3s ease-in-out infinite}.mochi.reach .al{animation:mUpL 3s ease-in-out infinite}.mochi.reach .ar{animation:mUpR 3s ease-in-out infinite}
+.mochi.side .bd{animation:mSide 3s ease-in-out infinite}.mochi.side .al{animation:mUpL 3s ease-in-out infinite}
+.mochi.yawn .bd{animation:mYawnB 3s ease-in-out infinite}.mochi.yawn .mo{animation:mYawnM 3s ease-in-out infinite}.mochi.yawn .al{animation:mUpL 3s ease-in-out infinite}.mochi.yawn .ar{animation:mUpR 3s ease-in-out infinite}
+@keyframes mEC{0%,100%{transform:translate(0,-4px)}25%{transform:translate(4px,0)}50%{transform:translate(0,4px)}75%{transform:translate(-4px,0)}}
+@keyframes mEUD{0%,100%{transform:translate(0,0)}20%,38%{transform:translate(0,-4.5px)}62%,80%{transform:translate(0,4.5px)}}
+@keyframes mELR{0%,100%{transform:translate(0,0)}20%,38%{transform:translate(-4.5px,0)}62%,80%{transform:translate(4.5px,0)}}
+@keyframes mTurnF{0%,100%{transform:translateX(0)}20%,38%{transform:translateX(-16px)}62%,80%{transform:translateX(16px)}}
+@keyframes mTurnE{0%,100%{transform:translateX(0)}20%,38%{transform:translateX(7px)}62%,80%{transform:translateX(-7px)}}
+@keyframes mChL{0%,100%{transform:scaleX(1)}20%,38%{transform:scaleX(.45)}62%,80%{transform:scaleX(1.1)}}
+@keyframes mChR{0%,100%{transform:scaleX(1)}20%,38%{transform:scaleX(1.1)}62%,80%{transform:scaleX(.45)}}
+@keyframes mTilt{0%,100%{transform:rotate(0)}20%,38%{transform:rotate(-24deg)}62%,80%{transform:rotate(24deg)}}
+@keyframes mRoll{0%,100%{transform:rotate(0)}22%{transform:rotate(-22deg)}46%{transform:translateY(8px) rotate(0)}70%{transform:rotate(22deg)}90%{transform:translateY(-4px)}}
+@keyframes mRollF{0%,30%,62%,100%{transform:translateY(0)}46%{transform:translateY(14px)}90%{transform:translateY(-12px)}}
+@keyframes mShrugA{0%,40%,85%,100%{transform:translateY(0)}15%,30%,55%,70%{transform:translateY(-18px)}}
+@keyframes mShrugH{0%,40%,85%,100%{transform:translateY(0)}15%,30%,55%,70%{transform:translateY(7px)}}
+@keyframes mCircL{0%,100%{transform:translate(0,0)}25%{transform:translate(-7px,-9px)}50%{transform:translate(0,-18px)}75%{transform:translate(7px,-9px)}}
+@keyframes mCircR{0%,100%{transform:translate(0,0)}25%{transform:translate(7px,-9px)}50%{transform:translate(0,-18px)}75%{transform:translate(-7px,-9px)}}
+@keyframes mCrossR{0%,50%,100%{transform:rotate(0)}12%,40%{transform:rotate(132deg)}62%,90%{transform:rotate(108deg)}}
+@keyframes mCrossL{0%,50%,100%{transform:rotate(0)}12%,40%{transform:rotate(-108deg)}62%,90%{transform:rotate(-132deg)}}
+@keyframes mCrossB{0%,50%,100%{transform:rotate(0)}12%,40%{transform:rotate(-5deg)}62%,90%{transform:rotate(5deg)}}
+@keyframes mReach{0%,100%{transform:scale(1,1)}45%,60%{transform:scale(.94,1.12)}}
+@keyframes mUpL{0%,100%{transform:rotate(0)}45%,60%{transform:rotate(110deg)}}
+@keyframes mUpR{0%,100%{transform:rotate(0)}45%,60%{transform:rotate(-110deg)}}
+@keyframes mSide{0%,100%{transform:rotate(0)}25%,35%{transform:rotate(13deg)}65%,75%{transform:rotate(-13deg)}}
+@keyframes mYawnB{0%,100%{transform:rotate(0)}45%,65%{transform:scale(.97,1.07) rotate(-4deg)}}
+@keyframes mYawnM{0%,100%{transform:scale(1,1)}45%,65%{transform:scale(2.4,3.4)}}
+@media (prefers-reduced-motion:reduce){.mochi *{animation:none!important}}</style>
+<defs><clipPath id="mochi-hc"><circle cx="340" cy="140" r="56"/></clipPath></defs>
+<ellipse cx="340" cy="302" rx="95" ry="10" fill="#B4B2A9" opacity=".35"/>
+<ellipse cx="318" cy="292" rx="16" ry="10" fill="#FFC9A8" stroke="#993C1D" stroke-width="3"/>
+<ellipse cx="362" cy="292" rx="16" ry="10" fill="#FFC9A8" stroke="#993C1D" stroke-width="3"/>
+<g class="bd">
+<rect x="326" y="186" width="28" height="24" rx="8" fill="#FFD9BF" stroke="#993C1D" stroke-width="3"/>
+<ellipse cx="340" cy="248" rx="52" ry="46" fill="#FFD9BF" stroke="#993C1D" stroke-width="3"/>
+<ellipse cx="340" cy="258" rx="30" ry="24" fill="#FFF1E6"/>
+<ellipse class="hn" cx="340" cy="200" rx="30" ry="11" fill="none" stroke="#1D9E75" stroke-width="3" stroke-dasharray="6 5"/>
+<g class="al"><circle class="hs" cx="296" cy="222" r="15" fill="none" stroke="#7F77DD" stroke-width="3" stroke-dasharray="5 4"/><path d="M296 222 Q278 240 270 262" fill="none" stroke="#993C1D" stroke-width="15" stroke-linecap="round"/><path d="M296 222 Q278 240 270 262" fill="none" stroke="#FFC9A8" stroke-width="9" stroke-linecap="round"/></g>
+<g class="ar"><circle class="hs" cx="384" cy="222" r="15" fill="none" stroke="#7F77DD" stroke-width="3" stroke-dasharray="5 4"/><path d="M384 222 Q402 240 410 262" fill="none" stroke="#993C1D" stroke-width="15" stroke-linecap="round"/><path d="M384 222 Q402 240 410 262" fill="none" stroke="#FFC9A8" stroke-width="9" stroke-linecap="round"/></g>
+<g class="hd">
+<g class="ea"><ellipse cx="298" cy="92" rx="13" ry="17" fill="#FFC9A8" stroke="#993C1D" stroke-width="3"/><ellipse cx="382" cy="92" rx="13" ry="17" fill="#FFC9A8" stroke="#993C1D" stroke-width="3"/></g>
+<circle cx="340" cy="140" r="58" fill="#FFD9BF" stroke="#993C1D" stroke-width="3"/>
+<g clip-path="url(#mochi-hc)"><g class="fc">
+<rect class="he" x="296" y="119" width="88" height="34" rx="17" fill="none" stroke="#D4537E" stroke-width="3" stroke-dasharray="6 5"/>
+<g class="ec"><path d="M311 138 Q319 130 327 138" fill="none" stroke="#4A1B0C" stroke-width="3.5" stroke-linecap="round"/><path d="M353 138 Q361 130 369 138" fill="none" stroke="#4A1B0C" stroke-width="3.5" stroke-linecap="round"/></g>
+<g class="eo"><ellipse cx="319" cy="136" rx="9" ry="10" fill="#FFFFFF" stroke="#4A1B0C" stroke-width="2.5"/><ellipse cx="361" cy="136" rx="9" ry="10" fill="#FFFFFF" stroke="#4A1B0C" stroke-width="2.5"/>
+<g class="pu"><circle cx="319" cy="136" r="4" fill="#2C2C2A"/><circle cx="361" cy="136" r="4" fill="#2C2C2A"/><circle cx="320.5" cy="134.5" r="1.3" fill="#FFFFFF"/><circle cx="362.5" cy="134.5" r="1.3" fill="#FFFFFF"/></g></g>
+<ellipse class="chL" cx="306" cy="156" rx="10" ry="6" fill="#F0997B" opacity=".7"/><ellipse class="chR" cx="374" cy="156" rx="10" ry="6" fill="#F0997B" opacity=".7"/>
+<ellipse cx="340" cy="164" rx="20" ry="12" fill="#FFF1E6"/>
+<ellipse class="mo" cx="340" cy="160" rx="4" ry="3" fill="#712B13"/>
+</g></g></g></g>
+</svg>

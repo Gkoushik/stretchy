@@ -1,0 +1,41 @@
+.mochi *{transform-box:view-box}
+.mochi .hn,.mochi .hs,.mochi .he,.mochi .eo{opacity:0;transition:opacity .3s}.mochi .ec{transition:opacity .3s}
+.mochi.g-neck .hn,.mochi.g-sh .hs,.mochi.g-eye .he,.mochi.g-eye .eo{opacity:1}.mochi.g-eye .ec{opacity:0}
+.mochi.no-guides .hn,.mochi.no-guides .hs,.mochi.no-guides .he{opacity:0}
+.mochi .bd{transform-origin:340px 296px}.mochi .hd{transform-origin:340px 196px}
+.mochi .al{transform-origin:296px 222px}.mochi .ar{transform-origin:384px 222px}.mochi .mo{transform-origin:340px 160px}
+.mochi .chL{transform-origin:306px 156px}.mochi .chR{transform-origin:374px 156px}
+.mochi.ecirc .pu{animation:mEC 1.5s linear infinite}.mochi.eud .pu{animation:mEUD 3s ease-in-out infinite}.mochi.elr .pu{animation:mELR 3s ease-in-out infinite}
+.mochi.turn .fc{animation:mTurnF 3s ease-in-out infinite}.mochi.turn .ea{animation:mTurnE 3s ease-in-out infinite}.mochi.turn .chL{animation:mChL 3s ease-in-out infinite}.mochi.turn .chR{animation:mChR 3s ease-in-out infinite}
+.mochi.tilt .hd{animation:mTilt 3s ease-in-out infinite}
+.mochi.roll .hd{animation:mRoll 4s ease-in-out infinite}.mochi.roll .fc{animation:mRollF 4s ease-in-out infinite}
+.mochi.shrug .al,.mochi.shrug .ar{animation:mShrugA 3s ease-in-out infinite}.mochi.shrug .hd{animation:mShrugH 3s ease-in-out infinite}
+.mochi.circles .al{animation:mCircL 1.5s linear infinite}.mochi.circles .ar{animation:mCircR 1.5s linear infinite}
+.mochi.cross .al{animation:mCrossL 3s ease-in-out infinite}.mochi.cross .ar{animation:mCrossR 3s ease-in-out infinite}.mochi.cross .bd{animation:mCrossB 3s ease-in-out infinite}
+.mochi.reach .bd{animation:mReach 3s ease-in-out infinite}.mochi.reach .al{animation:mUpL 3s ease-in-out infinite}.mochi.reach .ar{animation:mUpR 3s ease-in-out infinite}
+.mochi.side .bd{animation:mSide 3s ease-in-out infinite}.mochi.side .al{animation:mUpL 3s ease-in-out infinite}
+.mochi.yawn .bd{animation:mYawnB 3s ease-in-out infinite}.mochi.yawn .mo{animation:mYawnM 3s ease-in-out infinite}.mochi.yawn .al{animation:mUpL 3s ease-in-out infinite}.mochi.yawn .ar{animation:mUpR 3s ease-in-out infinite}
+@keyframes mEC{0%,100%{transform:translate(0,-4px)}25%{transform:translate(4px,0)}50%{transform:translate(0,4px)}75%{transform:translate(-4px,0)}}
+@keyframes mEUD{0%,100%{transform:translate(0,0)}20%,38%{transform:translate(0,-4.5px)}62%,80%{transform:translate(0,4.5px)}}
+@keyframes mELR{0%,100%{transform:translate(0,0)}20%,38%{transform:translate(-4.5px,0)}62%,80%{transform:translate(4.5px,0)}}
+@keyframes mTurnF{0%,100%{transform:translateX(0)}20%,38%{transform:translateX(-16px)}62%,80%{transform:translateX(16px)}}
+@keyframes mTurnE{0%,100%{transform:translateX(0)}20%,38%{transform:translateX(7px)}62%,80%{transform:translateX(-7px)}}
+@keyframes mChL{0%,100%{transform:scaleX(1)}20%,38%{transform:scaleX(.45)}62%,80%{transform:scaleX(1.1)}}
+@keyframes mChR{0%,100%{transform:scaleX(1)}20%,38%{transform:scaleX(1.1)}62%,80%{transform:scaleX(.45)}}
+@keyframes mTilt{0%,100%{transform:rotate(0)}20%,38%{transform:rotate(-24deg)}62%,80%{transform:rotate(24deg)}}
+@keyframes mRoll{0%,100%{transform:rotate(0)}22%{transform:rotate(-22deg)}46%{transform:translateY(8px) rotate(0)}70%{transform:rotate(22deg)}90%{transform:translateY(-4px)}}
+@keyframes mRollF{0%,30%,62%,100%{transform:translateY(0)}46%{transform:translateY(14px)}90%{transform:translateY(-12px)}}
+@keyframes mShrugA{0%,40%,85%,100%{transform:translateY(0)}15%,30%,55%,70%{transform:translateY(-18px)}}
+@keyframes mShrugH{0%,40%,85%,100%{transform:translateY(0)}15%,30%,55%,70%{transform:translateY(7px)}}
+@keyframes mCircL{0%,100%{transform:translate(0,0)}25%{transform:translate(-7px,-9px)}50%{transform:translate(0,-18px)}75%{transform:translate(7px,-9px)}}
+@keyframes mCircR{0%,100%{transform:translate(0,0)}25%{transform:translate(7px,-9px)}50%{transform:translate(0,-18px)}75%{transform:translate(-7px,-9px)}}
+@keyframes mCrossR{0%,50%,100%{transform:rotate(0)}12%,40%{transform:rotate(132deg)}62%,90%{transform:rotate(108deg)}}
+@keyframes mCrossL{0%,50%,100%{transform:rotate(0)}12%,40%{transform:rotate(-108deg)}62%,90%{transform:rotate(-132deg)}}
+@keyframes mCrossB{0%,50%,100%{transform:rotate(0)}12%,40%{transform:rotate(-5deg)}62%,90%{transform:rotate(5deg)}}
+@keyframes mReach{0%,100%{transform:scale(1,1)}45%,60%{transform:scale(.94,1.12)}}
+@keyframes mUpL{0%,100%{transform:rotate(0)}45%,60%{transform:rotate(110deg)}}
+@keyframes mUpR{0%,100%{transform:rotate(0)}45%,60%{transform:rotate(-110deg)}}
+@keyframes mSide{0%,100%{transform:rotate(0)}25%,35%{transform:rotate(13deg)}65%,75%{transform:rotate(-13deg)}}
+@keyframes mYawnB{0%,100%{transform:rotate(0)}45%,65%{transform:scale(.97,1.07) rotate(-4deg)}}
+@keyframes mYawnM{0%,100%{transform:scale(1,1)}45%,65%{transform:scale(2.4,3.4)}}
+@media (prefers-reduced-motion:reduce){.mochi *{animation:none!important}}

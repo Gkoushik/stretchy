@@ -1,0 +1,37 @@
+{
+  "_comment": "Exercise catalogue for Stretch Buddy. Edit labels, order, or grouping freely. The 'key' MUST match an animation defined in mochi/mochi.css (ecirc, eud, elr, turn, tilt, roll, shrug, circles, cross, reach, side, yawn). Adding a brand-new key requires a matching SVG/CSS animation in the Mochi asset.",
+  "groups": [
+    {
+      "name": "Eyes",
+      "moves": [
+        { "key": "ecirc", "label": "Eye circles" },
+        { "key": "eud",   "label": "Look up and down" },
+        { "key": "elr",   "label": "Look side to side" }
+      ]
+    },
+    {
+      "name": "Neck",
+      "moves": [
+        { "key": "turn", "label": "Head turn" },
+        { "key": "tilt", "label": "Ear to shoulder" },
+        { "key": "roll", "label": "Neck roll" }
+      ]
+    },
+    {
+      "name": "Shoulders",
+      "moves": [
+        { "key": "shrug",   "label": "Shrug" },
+        { "key": "circles", "label": "Shoulder rolls" },
+        { "key": "cross",   "label": "Cross-body pull" }
+      ]
+    },
+    {
+      "name": "Full body",
+      "moves": [
+        { "key": "reach", "label": "Reach up" },
+        { "key": "side",  "label": "Side bend" },
+        { "key": "yawn",  "label": "Big yawn" }
+      ]
+    }
+  ]
+}

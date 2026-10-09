@@ -1,0 +1,16 @@
+# Build output
+Stretchy.app/
+build.log
+
+# Compiled helper binary (regenerate via make-icons.sh)
+tools/iconrender
+
+# Icon build intermediates (final Stretchy.icns + menubar.png are committed)
+icon-1024.png
+icon.iconset/
+icon.html
+menubar.html
+icon.svg
+
+# macOS cruft
+.DS_Store
