@@ -16,12 +16,15 @@ Sitting at a computer all day is rough on your neck, shoulders, and eyes. Stretc
 
 - **Menu bar only** — no Dock icon, no window in your face. Just the character in the menu bar.
 - **Scheduled breaks** — the character pops up every N minutes (1 min for testing, up to 2 hours).
-- **One exercise per break** — slides in from the right, animates the stretch, auto-hides after a set duration.
-- **12 built-in exercises** across Eyes, Neck, Shoulders, and Full body.
+- **One exercise per break**: a small card drops down from the menu bar icon with the animated character, a one-line caption ("Ear to shoulder · 15s each side"), a side chip (Left / Right) for holds, a rep counter for reps, and a countdown bar.
+- **Done / Snooze** buttons on the card. Snooze brings the same exercise back in 5 minutes.
+- **13 built-in exercises** across Eyes, Neck, Shoulders, and Full body, including a 20-20-20 "look far away" eye rest.
+- **Stretchy arms**: reach, side bend and cross-body pull stretch the arms to length instead of rotating stiff limbs.
+- **Template menu bar icon** that adapts to light and dark menu bars. It fills up from the bottom as the next break approaches, and turns into the colored character only while a break is showing.
+- **Accessibility**: with Reduce Motion on, each exercise shows a still of its peak pose and the card fades instead of sliding. VoiceOver announces each break without taking focus.
 - **Custom routine** — a drag-to-reorder editor to pick which exercises run, in what order. Add, remove, reorder.
 - **In order or shuffle.**
 - **Three sizes** — Small, Medium, Large.
-- **Stop button** — dismiss the current exercise early (× on the popup, or a menu item).
 - **Live countdown** — the menu shows the time until the next exercise.
 - Settings persist across restarts.
 
@@ -65,7 +68,8 @@ Click the character in the menu bar:
 |---|---|
 | **Next exercise in M:SS** | Live countdown to the next break (updates while the menu is open). |
 | **Stretch now** | Trigger a break immediately. |
-| **Stop current exercise** | Dismiss the current popup (enabled only while one is showing). |
+| **Stop current exercise** | Dismiss the current card (enabled only while one is showing). |
+| **Snooze 5 minutes** | Hide the card and show the same exercise again in 5 minutes. |
 | **Edit routine…** | Open the drag-to-reorder routine editor. |
 | **Show every…** | Interval between breaks (1 min / 15 / 30 / 45 min / 1 h / 2 h). |
 | **Show for…** | How long the character stays visible (15 s / 30 s / 1 min / 2 min). |
@@ -78,26 +82,29 @@ Click the character in the menu bar:
 The exercise catalogue lives in [`moves.json`](moves.json):
 
 ```json
-{
-  "groups": [
-    { "name": "Neck", "moves": [
-      { "key": "roll", "label": "Neck roll" }
-    ]}
-  ]
-}
+{ "key": "tilt", "label": "Ear to shoulder", "detail": "15s each side, shoulders down",
+  "type": "hold", "cycle": 6, "sides": ["Left", "Right"] }
 ```
 
-- **`label`** — free text shown in the menu and routine editor.
-- **`key`** — must match an animation defined in `mochi/mochi.css`. Available keys:
-  `ecirc`, `eud`, `elr`, `turn`, `tilt`, `roll`, `shrug`, `circles`, `cross`, `reach`, `side`, `yawn`.
+| Field | Meaning |
+|---|---|
+| `key` | Animation in `mochi/stretchy.css`: `ecirc`, `eud`, `elr`, `far`, `turn`, `tilt`, `roll`, `shrug`, `circles`, `cross`, `reach`, `side`, `yawn`. |
+| `label` | Title on the card and in the routine editor. |
+| `detail` | Caption line under the title (5 to 7 words works best). |
+| `type` | `hold`, `reps` or `flow`. |
+| `cycle` | Seconds per animation loop (6 for holds, 3 or 4 for reps). |
+| `sides` | Two labels shown in the side chip, from the viewer's side (copy the character like a mirror). |
+| `reps` | Number of dots in the rep counter. |
+| `eyes` | `true` zooms to the face and shows the target dot for the eyes to follow. |
 
 Edit `moves.json`, then `./build.sh` to pick up the changes. Reordering and relabeling is safe; a brand-new key needs a matching SVG/CSS animation in the Mochi asset.
 
 ## How it works
 
-- The character is a self-contained **SVG + CSS animation** (the "Mochi" asset set). The app renders it in a transparent, borderless `WKWebView` floating panel.
-- Swift drives which move plays via `webView.evaluateJavaScript("setMove('roll', false)")`.
-- A repeating `Timer` triggers each break; the panel slides in and out with `NSAnimationContext`.
+- The character is an **SVG + CSS animation**. `mochi/stretchy-body.svg.txt` is a fork of the Mochi body with attached shoulders (a trapezius that rises with the shrug), wrapper groups so circles can be built from two sine waves a quarter period apart, and a target dot for eye moves. `mochi/stretchy.css` holds all motion on a shared timing system (6s holds, 3 to 4s reps, one easing pair).
+- `build.sh` inlines the CSS and body into `web/player.html` to produce the card page, rendered in a `WKWebView` inside a non-activating panel that never takes focus.
+- Swift passes the move to the page with `setMove({...})`. Done and Snooze post back through a `WKScriptMessageHandler`.
+- A repeating `Timer` triggers each break. The card drops from the status item; with Reduce Motion it fades instead.
 - The routine is stored in `UserDefaults`.
 
 ## Project structure
@@ -108,10 +115,13 @@ Edit `moves.json`, then `./build.sh` to pick up the changes. Reordering and rela
 ├── build.sh               # compile + assemble Stretchy.app
 ├── make-icons.sh          # regenerate Stretchy.icns + menubar.png from SVG
 ├── moves.json             # exercise catalogue (editable)
-├── mochi/                 # Mochi character assets (SVG + CSS)
-│   ├── mochi.css
-│   ├── mochi-body.svg.txt
-│   └── svg/               # per-move standalone animated SVGs
+├── web/player.html        # card page template (caption, chip, dots, bar, buttons)
+├── mochi/
+│   ├── stretchy.css       # Stretchy motion system (used by the app)
+│   ├── stretchy-body.svg.txt  # forked character rig (used by the app)
+│   ├── mochi.css          # original Mochi asset, kept for reference
+│   ├── mochi-body.svg.txt # original Mochi asset, kept for reference
+│   └── svg/               # original per-move standalone SVGs
 ├── tools/iconrender.swift # offscreen WebKit SVG → PNG renderer
 ├── Stretchy.icns          # app icon (committed)
 └── menubar.png            # menu bar face (committed)

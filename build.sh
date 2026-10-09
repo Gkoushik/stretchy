@@ -26,34 +26,17 @@ swiftc \
   -o "$APP_DIR/Contents/MacOS/$APP_NAME" \
   Sources/main.swift
 
-echo "==> Assembling player.html (inlines Mochi CSS + SVG)"
-{
-  cat <<'HTML_HEAD'
-<!doctype html><html><head><meta charset="utf-8">
-<style>
-html,body{margin:0;padding:0;background:transparent;overflow:hidden}
-svg.mochi{width:100vw;height:100vh;display:block}
-HTML_HEAD
-  cat mochi/mochi.css
-  cat <<'HTML_MID'
-</style></head><body>
-<svg class="mochi" id="m" viewBox="232 46 216 290" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Mochi stretching">
-HTML_MID
-  cat mochi/mochi-body.svg.txt
-  cat <<'HTML_TAIL'
-</svg>
-<script>
-const GROUP_CLASS={eye:'g-eye',neck:'g-neck',sh:'g-sh',fb:''};
-const GROUP={ecirc:'eye',eud:'eye',elr:'eye',turn:'neck',tilt:'neck',roll:'neck',shrug:'sh',circles:'sh',cross:'sh',reach:'fb',side:'fb',yawn:'fb'};
-const svg=document.getElementById('m');
-window.setMove=function(move,guides){
-  svg.setAttribute('class','mochi'); void svg.getBoundingClientRect();
-  svg.setAttribute('class',['mochi',move,GROUP_CLASS[GROUP[move]||''],guides?'':'no-guides'].filter(Boolean).join(' '));
-};
-window.setMove('roll',false);
-</script></body></html>
-HTML_TAIL
-} > "$RES/player.html"
+echo "==> Assembling player.html (template + Stretchy CSS + SVG body)"
+# Replace each marker in web/player.html with the contents of a file.
+inline() { # $1 marker, $2 file
+  awk -v m="$1" -v f="$2" '{
+    i = index($0, m)
+    if (i) { printf "%s", substr($0, 1, i - 1); while ((getline l < f) > 0) print l; close(f); print substr($0, i + length(m)) }
+    else print
+  }'
+}
+inline '/*STRETCHY_CSS*/' mochi/stretchy.css < web/player.html \
+  | inline '<!--MOCHI_BODY-->' mochi/stretchy-body.svg.txt > "$RES/player.html"
 
 echo "==> Copying moves.json"
 cp moves.json "$RES/moves.json"

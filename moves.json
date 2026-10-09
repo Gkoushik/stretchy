@@ -1,36 +1,37 @@
 {
-  "_comment": "Exercise catalogue for Stretch Buddy. Edit labels, order, or grouping freely. The 'key' MUST match an animation defined in mochi/mochi.css (ecirc, eud, elr, turn, tilt, roll, shrug, circles, cross, reach, side, yawn). Adding a brand-new key requires a matching SVG/CSS animation in the Mochi asset.",
+  "_comment": "Exercise catalogue for Stretchy. 'key' must match an animation in mochi/stretchy.css. 'cycle' is seconds per loop (hold = 6, reps = 3 or 4). 'sides' labels the two halves of a hold, from the viewer's side (copy Mochi like a mirror). 'reps' shows a dot counter. 'eyes' zooms to the face and shows the target dot.",
   "groups": [
     {
       "name": "Eyes",
       "moves": [
-        { "key": "ecirc", "label": "Eye circles" },
-        { "key": "eud",   "label": "Look up and down" },
-        { "key": "elr",   "label": "Look side to side" }
+        { "key": "ecirc", "label": "Eye circles",       "detail": "Follow the dot, keep your head still", "type": "flow", "cycle": 4, "eyes": true },
+        { "key": "eud",   "label": "Look up and down",  "detail": "Follow the dot, 2s each way",          "type": "hold", "cycle": 6, "eyes": true, "sides": ["Up", "Down"] },
+        { "key": "elr",   "label": "Look side to side", "detail": "Follow the dot, 2s each way",          "type": "hold", "cycle": 6, "eyes": true, "sides": ["Left", "Right"] },
+        { "key": "far",   "label": "Look far away",     "detail": "Find something 20 ft away · 20s",      "type": "hold", "cycle": 6, "eyes": true }
       ]
     },
     {
       "name": "Neck",
       "moves": [
-        { "key": "turn", "label": "Head turn" },
-        { "key": "tilt", "label": "Ear to shoulder" },
-        { "key": "roll", "label": "Neck roll" }
+        { "key": "turn", "label": "Head turn",       "detail": "Hold 15s each side",           "type": "hold", "cycle": 6, "sides": ["Left", "Right"] },
+        { "key": "tilt", "label": "Ear to shoulder", "detail": "15s each side, shoulders down", "type": "hold", "cycle": 6, "sides": ["Left", "Right"] },
+        { "key": "roll", "label": "Half neck roll",  "detail": "Ear → chin → ear, slowly",      "type": "flow", "cycle": 6 }
       ]
     },
     {
       "name": "Shoulders",
       "moves": [
-        { "key": "shrug",   "label": "Shrug" },
-        { "key": "circles", "label": "Shoulder rolls" },
-        { "key": "cross",   "label": "Cross-body pull" }
+        { "key": "shrug",   "label": "Shoulder shrug",  "detail": "Up to your ears, then drop",    "type": "reps", "cycle": 3, "reps": 5 },
+        { "key": "circles", "label": "Shoulder rolls",  "detail": "Slow, big circles",             "type": "reps", "cycle": 4, "reps": 5 },
+        { "key": "cross",   "label": "Cross-body pull", "detail": "Hold 15s each arm",             "type": "hold", "cycle": 6, "sides": ["Right arm", "Left arm"] }
       ]
     },
     {
       "name": "Full body",
       "moves": [
-        { "key": "reach", "label": "Reach up" },
-        { "key": "side",  "label": "Side bend" },
-        { "key": "yawn",  "label": "Big yawn" }
+        { "key": "reach", "label": "Reach up",     "detail": "Stretch tall · hold 15s",          "type": "hold", "cycle": 6 },
+        { "key": "side",  "label": "Side bend",    "detail": "Arm over, lean · 15s each side",   "type": "hold", "cycle": 6, "sides": ["Lean right", "Lean left"] },
+        { "key": "yawn",  "label": "Chest opener", "detail": "Arms wide, chest up, big yawn",    "type": "hold", "cycle": 6 }
       ]
     }
   ]

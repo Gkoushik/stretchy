@@ -1,0 +1,263 @@
+/* Stretchy motion system.
+   Forked from the Mochi asset (mochi/mochi.css is kept untouched for reference).
+   Body markup: mochi/stretchy-body.svg.txt
+
+   Motion tokens (one vocabulary for every move):
+     hold  = 6s cycle: ease into pose A, hold, return, ease into pose B, hold, return
+     reps  = 3s per rep (shoulder rolls use 4s per revolution)
+     flow  = continuous sine motion (eye circles, half neck roll)
+   Easing:
+     IN   cubic-bezier(.2,.9,.25,1.15)  slight overshoot, soft and elastic
+     OUT  cubic-bezier(.45,0,.55,1)     smooth return
+     SINE cubic-bezier(.37,0,.63,1)     used with `alternate` to build circles and arcs
+
+   Stretchy arms: an arm is stretched along its own axis, so line weight stays constant.
+   Left arm rest angle is 123deg, right arm 57deg. Each arm keyframe uses
+     rotate(A) rotate(±33deg) scaleY(K) rotate(∓33deg)
+   which aligns the arm with the Y axis, stretches it by K, rotates it back, then swings it by A. */
+
+.mochi{--peak:0s}
+.mochi *{transform-box:view-box}
+
+.mochi .bd{transform-origin:340px 296px}
+.mochi .hd,.mochi .hdy{transform-origin:340px 196px}
+.mochi .al,.mochi .alx,.mochi .alf,.mochi .alfx{transform-origin:296px 222px}
+.mochi .ar,.mochi .arx{transform-origin:384px 222px}
+.mochi .tr{transform-origin:340px 246px}
+.mochi .mo{transform-origin:340px 160px}
+.mochi .chL{transform-origin:306px 156px}
+.mochi .chR{transform-origin:374px 156px}
+.mochi .tgx,.mochi .tgt{transform-origin:340px 136px}
+
+/* Signature expression is the closed happy eyes; eye moves open them. */
+.mochi .eo{opacity:0;transition:opacity .3s}
+.mochi .ec{transition:opacity .3s}
+.mochi.eyes-open .eo{opacity:1}
+.mochi.eyes-open .ec{opacity:0}
+
+/* Target dot: only eye moves show it, and the eyes follow it. */
+.mochi .tgt{opacity:0}
+.mochi.ecirc .tgt,.mochi.eud .tgt,.mochi.elr .tgt,.mochi.far .tgt{opacity:1}
+
+/* Front copy of the left arm, used by the cross-body pull to swap draw order. */
+.mochi .alf{opacity:0}
+
+/* ---------- Eyes ---------- */
+
+/* Eye circles: two sine oscillations a quarter period apart trace a true circle (4s per revolution). */
+@keyframes pX{from{transform:translateX(-4.5px)}to{transform:translateX(4.5px)}}
+@keyframes pY{from{transform:translateY(-4.5px)}to{transform:translateY(4.5px)}}
+@keyframes dX{from{transform:translateX(-63px)}to{transform:translateX(63px)}}
+@keyframes dY{from{transform:translateY(-63px)}to{transform:translateY(63px)}}
+.mochi.ecirc .pux{animation:pX 2s cubic-bezier(.37,0,.63,1) infinite alternate}
+.mochi.ecirc .pu {animation:pY 2s cubic-bezier(.37,0,.63,1) -1s infinite alternate}
+.mochi.ecirc .tgx{animation:dX 2s cubic-bezier(.37,0,.63,1) infinite alternate}
+.mochi.ecirc .tgt{animation:dY 2s cubic-bezier(.37,0,.63,1) -1s infinite alternate}
+
+/* Look up and down: dot grows out of the face, eyes follow and hold. */
+@keyframes eudP{
+  0%,50%,100%{transform:translateY(0);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  12%,38%{transform:translateY(-5px);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  62%,88%{transform:translateY(5px);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+@keyframes eudD{
+  0%,50%,100%{transform:translateY(0) scale(0);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  12%,38%{transform:translateY(-63px) scale(1);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  62%,88%{transform:translateY(63px) scale(1);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+.mochi.eud .pu {animation:eudP 6s infinite}
+.mochi.eud .tgt{animation:eudD 6s infinite}
+
+/* Look side to side. */
+@keyframes elrP{
+  0%,50%,100%{transform:translateX(0);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  12%,38%{transform:translateX(-5px);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  62%,88%{transform:translateX(5px);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+@keyframes elrD{
+  0%,50%,100%{transform:translateX(0) scale(0);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  12%,38%{transform:translateX(-63px) scale(1);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  62%,88%{transform:translateX(63px) scale(1);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+.mochi.elr .pu {animation:elrP 6s infinite}
+.mochi.elr .tgt{animation:elrD 6s infinite}
+
+/* Look far away (20-20-20): the dot recedes into the distance and the eyes relax up. */
+@keyframes farP{
+  0%,100%{transform:translateY(0);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  35%,80%{transform:translateY(-3px);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+@keyframes farD{
+  0%,100%{transform:translateY(-63px) scale(1.7);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  35%,80%{transform:translateY(-63px) scale(.35);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+.mochi.far .pu {animation:farP 6s infinite}
+.mochi.far .tgt{animation:farD 6s infinite}
+
+/* ---------- Neck ---------- */
+
+/* Head turn: the original 2.5D rig (face slides, ears counter-shift, cheeks foreshorten), retimed to the hold token. */
+@keyframes turnF{
+  0%,50%,100%{transform:translateX(0);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  12%,38%{transform:translateX(-16px);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  62%,88%{transform:translateX(16px);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+@keyframes turnE{
+  0%,50%,100%{transform:translateX(0);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  12%,38%{transform:translateX(7px);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  62%,88%{transform:translateX(-7px);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+@keyframes turnCL{
+  0%,50%,100%{transform:scaleX(1);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  12%,38%{transform:scaleX(.45);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  62%,88%{transform:scaleX(1.1);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+@keyframes turnCR{
+  0%,50%,100%{transform:scaleX(1);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  12%,38%{transform:scaleX(1.1);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  62%,88%{transform:scaleX(.45);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+.mochi.turn .fc {animation:turnF 6s infinite}
+.mochi.turn .ea {animation:turnE 6s infinite}
+.mochi.turn .chL{animation:turnCL 6s infinite}
+.mochi.turn .chR{animation:turnCR 6s infinite}
+
+/* Ear to shoulder: 38deg (stretch range, not a curious tilt) and the opposite shoulder drops. */
+@keyframes tiltH{
+  0%,50%,100%{transform:rotate(0deg);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  12%,38%{transform:rotate(-38deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  62%,88%{transform:rotate(38deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+@keyframes tiltDropR{
+  0%,50%,100%{transform:translateY(0);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  12%,38%{transform:translateY(6px);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  62%,88%{transform:translateY(0);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+@keyframes tiltDropL{
+  0%,50%,100%{transform:translateY(0);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  12%,38%{transform:translateY(0);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  62%,88%{transform:translateY(6px);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+.mochi.tilt .hd {animation:tiltH 6s infinite}
+.mochi.tilt .arx{animation:tiltDropR 6s infinite}
+.mochi.tilt .alx{animation:tiltDropL 6s infinite}
+
+/* Half neck roll: ear -> chin -> ear. Rotation and chin dip are sines with shared zero crossings,
+   so the head travels one smooth lower arc and never rolls back. */
+@keyframes rollR{
+  0%,100%{transform:rotate(-30deg);animation-timing-function:cubic-bezier(.37,0,.63,1)}
+  50%{transform:rotate(30deg);animation-timing-function:cubic-bezier(.37,0,.63,1)}}
+@keyframes rollDip{from{transform:translateY(0)}to{transform:translateY(9px)}}
+@keyframes rollFace{from{transform:translateY(0)}to{transform:translateY(12px)}}
+.mochi.roll .hd {animation:rollR 6s infinite}
+.mochi.roll .hdy{animation:rollDip 1.5s cubic-bezier(.37,0,.63,1) infinite alternate}
+.mochi.roll .fc {animation:rollFace 1.5s cubic-bezier(.37,0,.63,1) infinite alternate}
+
+/* ---------- Shoulders ---------- */
+
+/* Shrug: the trapezius rises with the arms, so the shoulders stay attached. */
+@keyframes shrugA{
+  0%,80%,100%{transform:translateY(0);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  25%,55%{transform:translateY(-18px);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+@keyframes shrugT{
+  0%,80%,100%{transform:scaleY(1);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  25%,55%{transform:scaleY(1.8);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+@keyframes shrugH{
+  0%,80%,100%{transform:translateY(0);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  25%,55%{transform:translateY(5px);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+.mochi.shrug .alx,.mochi.shrug .arx{animation:shrugA 3s infinite}
+.mochi.shrug .tr {animation:shrugT 3s infinite}
+.mochi.shrug .hdy{animation:shrugH 3s infinite}
+
+/* Shoulder rolls: true circles via split axes (4s per revolution). The arm scales up in the
+   forward phase to fake depth; the trapezius follows the vertical phase. */
+@keyframes circXL{from{transform:translateX(-5px) scale(.97)}to{transform:translateX(5px) scale(1.05)}}
+@keyframes circXR{from{transform:translateX(5px) scale(.97)}to{transform:translateX(-5px) scale(1.05)}}
+@keyframes circY{from{transform:translateY(0)}to{transform:translateY(-16px)}}
+@keyframes circT{from{transform:scaleY(1)}to{transform:scaleY(1.71)}}
+.mochi.circles .alx{animation:circXL 2s cubic-bezier(.37,0,.63,1) infinite alternate}
+.mochi.circles .arx{animation:circXR 2s cubic-bezier(.37,0,.63,1) infinite alternate}
+.mochi.circles .al,.mochi.circles .ar{animation:circY 2s cubic-bezier(.37,0,.63,1) -1s infinite alternate}
+.mochi.circles .tr{animation:circT 2s cubic-bezier(.37,0,.63,1) -1s infinite alternate}
+
+/* Cross-body pull: one straight (stretched) arm across the chest, the other arm hooks it.
+   Side A = right arm across, left hooks (front copy .alf is drawn on top).
+   Side B = left arm across, right hooks (right arm is already drawn on top). */
+@keyframes crossL{
+  0%,50%,100%{transform:rotate(0deg) rotate(33deg) scaleY(1) rotate(-33deg);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  12%,38%{transform:rotate(-103deg) rotate(33deg) scaleY(1) rotate(-33deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  62%,88%{transform:rotate(-118deg) rotate(33deg) scaleY(1.9) rotate(-33deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+@keyframes crossR{
+  0%,50%,100%{transform:rotate(0deg) rotate(-33deg) scaleY(1) rotate(33deg);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  12%,38%{transform:rotate(118deg) rotate(-33deg) scaleY(1.9) rotate(33deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  62%,88%{transform:rotate(103deg) rotate(-33deg) scaleY(1) rotate(33deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+@keyframes crossB{
+  0%,50%,100%{transform:rotate(0deg);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  12%,38%{transform:rotate(-3deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  62%,88%{transform:rotate(3deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+@keyframes showSideA{0%{opacity:1}50%,100%{opacity:0}}
+@keyframes hideSideA{0%{opacity:0}50%,100%{opacity:1}}
+.mochi.cross .al {animation:crossL 6s infinite,hideSideA 6s step-end infinite}
+.mochi.cross .alf{animation:crossL 6s infinite,showSideA 6s step-end infinite}
+.mochi.cross .ar {animation:crossR 6s infinite}
+.mochi.cross .bd {animation:crossB 6s infinite}
+
+/* ---------- Full body ---------- */
+
+/* Reach up: stretchy arms go fully overhead (2.9x), body elongates, elastic overshoot on the way up. */
+@keyframes reachL{
+  0%,85%,100%{transform:rotate(0deg) rotate(33deg) scaleY(1) rotate(-33deg);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  15%,70%{transform:rotate(132deg) rotate(33deg) scaleY(2.9) rotate(-33deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+@keyframes reachR{
+  0%,85%,100%{transform:rotate(0deg) rotate(-33deg) scaleY(1) rotate(33deg);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  15%,70%{transform:rotate(-132deg) rotate(-33deg) scaleY(2.9) rotate(33deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+@keyframes reachB{
+  0%,85%,100%{transform:scale(1,1);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  15%,70%{transform:scale(.95,1.1);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+.mochi.reach .al{animation:reachL 6s infinite}
+.mochi.reach .ar{animation:reachR 6s infinite}
+.mochi.reach .bd{animation:reachB 6s infinite}
+
+/* Side bend: alternates properly. Side A = left arm over + lean right, side B = right arm over + lean left. */
+@keyframes sideL{
+  0%,50%,100%{transform:rotate(0deg) rotate(33deg) scaleY(1) rotate(-33deg);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  12%,38%{transform:rotate(138deg) rotate(33deg) scaleY(2.7) rotate(-33deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  62%,88%{transform:rotate(0deg) rotate(33deg) scaleY(1) rotate(-33deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+@keyframes sideR{
+  0%,50%,100%{transform:rotate(0deg) rotate(-33deg) scaleY(1) rotate(33deg);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  12%,38%{transform:rotate(0deg) rotate(-33deg) scaleY(1) rotate(33deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  62%,88%{transform:rotate(-138deg) rotate(-33deg) scaleY(2.7) rotate(33deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+@keyframes sideB{
+  0%,50%,100%{transform:rotate(0deg);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  12%,38%{transform:rotate(14deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  62%,88%{transform:rotate(-14deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+.mochi.side .al{animation:sideL 6s infinite}
+.mochi.side .ar{animation:sideR 6s infinite}
+.mochi.side .bd{animation:sideB 6s infinite}
+
+/* Chest opener + yawn: arms wide (not overhead, so it no longer looks like reach), chest up, big mouth. */
+@keyframes yawnL{
+  0%,85%,100%{transform:rotate(0deg) rotate(33deg) scaleY(1) rotate(-33deg);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  18%,70%{transform:rotate(62deg) rotate(33deg) scaleY(1.35) rotate(-33deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+@keyframes yawnR{
+  0%,85%,100%{transform:rotate(0deg) rotate(-33deg) scaleY(1) rotate(33deg);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  18%,70%{transform:rotate(-62deg) rotate(-33deg) scaleY(1.35) rotate(33deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+@keyframes yawnB{
+  0%,85%,100%{transform:scale(1,1);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  18%,70%{transform:scale(1.03,1.05);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+@keyframes yawnT{
+  0%,85%,100%{transform:scaleY(1);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  18%,70%{transform:scaleY(1.15);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+@keyframes yawnH{
+  0%,85%,100%{transform:translateY(0);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  18%,70%{transform:translateY(-3px);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+@keyframes yawnM{
+  0%,85%,100%{transform:scale(1,1);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  25%,65%{transform:scale(2.6,3.6);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+.mochi.yawn .al {animation:yawnL 6s infinite}
+.mochi.yawn .ar {animation:yawnR 6s infinite}
+.mochi.yawn .bd {animation:yawnB 6s infinite}
+.mochi.yawn .tr {animation:yawnT 6s infinite}
+.mochi.yawn .hdy{animation:yawnH 6s infinite}
+.mochi.yawn .mo {animation:yawnM 6s infinite}
+
+/* ---------- Reduced motion ----------
+   Freeze every move at its peak pose instead of frame 0, so the 12 moves stay distinguishable. */
+.mochi.ecirc{--peak:-.5s}
+.mochi.eud,.mochi.elr,.mochi.turn,.mochi.tilt,.mochi.cross,.mochi.side{--peak:-1.5s}
+.mochi.far{--peak:-3s}
+.mochi.roll{--peak:-1s}
+.mochi.shrug{--peak:-1.2s}
+.mochi.circles{--peak:-1s}
+.mochi.reach,.mochi.yawn{--peak:-2.4s}
+@media (prefers-reduced-motion:reduce){
+  .mochi *{animation-play-state:paused!important;animation-delay:var(--peak)!important}
+}
+.mochi.peaks *{animation-play-state:paused!important;animation-delay:var(--peak)!important}
