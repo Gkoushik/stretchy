@@ -313,7 +313,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
         didSet { UserDefaults.standard.set(bedtimeRepeat, forKey: "bedtimeRepeat") }
     }
     private var bedtimeTimer: Timer?
-    private var lastBedtimeShow: Date?
+    /// Saved so a relaunch does not show the yawn again before the repeat interval has passed.
+    private var lastBedtimeShow = UserDefaults.standard.object(forKey: "lastBedtimeShow") as? Date {
+        didSet { UserDefaults.standard.set(lastBedtimeShow, forKey: "lastBedtimeShow") }
+    }
     private var showingBedtime = false
     private var bedtimeOnItem: NSMenuItem!
     private var bedtimeHourItems: [Int: NSMenuItem] = [:]
@@ -534,8 +537,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
         showBedtime()
     }
 
-    private func showBedtime() {
-        lastBedtimeShow = Date()
+    private func showBedtime(scheduled: Bool = true) {
+        if scheduled { lastBedtimeShow = Date() }
         showingBedtime = true
         currentKey = bedtimeKey
         showBreak(advance: false)
@@ -720,7 +723,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
         bedtimeRepeat = secs; refreshStates()
     }
 
-    @objc private func previewBedtime() { showBedtime() }
+    @objc private func previewBedtime() { showBedtime(scheduled: false) }
 
     /// Stop is only enabled while a break is on screen.
     func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
