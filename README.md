@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/icon.png" width="128" alt="Stretchy icon">
+  <img src="docs/demo.gif" width="200" alt="Stretchy character doing neck, shoulder and full-body stretches">
 </p>
 
 <h1 align="center">Stretchy</h1>
@@ -119,7 +119,7 @@ Edit `moves.json`, then `./build.sh` to pick up the changes. Reordering and rela
 ├── Sources/main.swift     # the whole app (AppKit + SwiftUI + WebKit)
 ├── build.sh               # compile + assemble Stretchy.app
 ├── make-icons.sh          # regenerate Stretchy.icns + menubar.png from SVG
-├── make-readme-image.sh   # regenerate docs/exercises.png from moves.json
+├── make-readme-image.sh   # regenerate docs/demo.gif and docs/exercises.png
 ├── moves.json             # exercise catalogue (editable)
 ├── web/player.html        # character page template
 ├── mochi/

@@ -193,11 +193,17 @@
 
 /* Reach up: stretchy arms go fully overhead (2.9x), body elongates, elastic overshoot on the way up. */
 @keyframes reachL{
-  0%,85%,100%{transform:rotate(0deg) rotate(33deg) scaleY(1) rotate(-33deg);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
-  15%,70%{transform:rotate(132deg) rotate(33deg) scaleY(2.9) rotate(-33deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+  0%,85%,100%{transform:rotate(0deg) rotate(33deg) scaleY(1) rotate(-33deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  9%{transform:rotate(110deg) rotate(33deg) scaleY(1.15) rotate(-33deg);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  15%,70%{transform:rotate(132deg) rotate(33deg) scaleY(2.9) rotate(-33deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  78%{transform:rotate(110deg) rotate(33deg) scaleY(1.15) rotate(-33deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+}
 @keyframes reachR{
-  0%,85%,100%{transform:rotate(0deg) rotate(-33deg) scaleY(1) rotate(33deg);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
-  15%,70%{transform:rotate(-132deg) rotate(-33deg) scaleY(2.9) rotate(33deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+  0%,85%,100%{transform:rotate(0deg) rotate(-33deg) scaleY(1) rotate(33deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  9%{transform:rotate(-110deg) rotate(-33deg) scaleY(1.15) rotate(33deg);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  15%,70%{transform:rotate(-132deg) rotate(-33deg) scaleY(2.9) rotate(33deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  78%{transform:rotate(-110deg) rotate(-33deg) scaleY(1.15) rotate(33deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+}
 @keyframes reachB{
   0%,85%,100%{transform:scale(1,1);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
   15%,70%{transform:scale(.95,1.1);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
@@ -207,13 +213,17 @@
 
 /* Side bend: alternates properly. Side A = left arm over + lean right, side B = right arm over + lean left. */
 @keyframes sideL{
-  0%,50%,100%{transform:rotate(0deg) rotate(33deg) scaleY(1) rotate(-33deg);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  0%,50%,62%,88%,100%{transform:rotate(0deg) rotate(33deg) scaleY(1) rotate(-33deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  7%{transform:rotate(115deg) rotate(33deg) scaleY(1.15) rotate(-33deg);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
   12%,38%{transform:rotate(138deg) rotate(33deg) scaleY(2.7) rotate(-33deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}
-  62%,88%{transform:rotate(0deg) rotate(33deg) scaleY(1) rotate(-33deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+  44%{transform:rotate(115deg) rotate(33deg) scaleY(1.15) rotate(-33deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+}
 @keyframes sideR{
-  0%,50%,100%{transform:rotate(0deg) rotate(-33deg) scaleY(1) rotate(33deg);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
-  12%,38%{transform:rotate(0deg) rotate(-33deg) scaleY(1) rotate(33deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}
-  62%,88%{transform:rotate(-138deg) rotate(-33deg) scaleY(2.7) rotate(33deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}}
+  0%,12%,38%,50%,100%{transform:rotate(0deg) rotate(-33deg) scaleY(1) rotate(33deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  57%{transform:rotate(-115deg) rotate(-33deg) scaleY(1.15) rotate(33deg);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
+  62%,88%{transform:rotate(-138deg) rotate(-33deg) scaleY(2.7) rotate(33deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  94%{transform:rotate(-115deg) rotate(-33deg) scaleY(1.15) rotate(33deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+}
 @keyframes sideB{
   0%,50%,100%{transform:rotate(0deg);animation-timing-function:cubic-bezier(.2,.9,.25,1.15)}
   12%,38%{transform:rotate(14deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}
