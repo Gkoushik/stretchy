@@ -8,6 +8,12 @@
 
 ---
 
+## Exercises
+
+<p align="center">
+  <img src="docs/exercises.png" alt="All Stretchy exercises at their peak pose">
+</p>
+
 ## Why
 
 Sitting at a computer all day is rough on your neck, shoulders, and eyes. Stretchy keeps you active with short, low-friction movement breaks: one exercise at a time, on a schedule you set, then it gets out of your way.
@@ -113,6 +119,7 @@ Edit `moves.json`, then `./build.sh` to pick up the changes. Reordering and rela
 ├── Sources/main.swift     # the whole app (AppKit + SwiftUI + WebKit)
 ├── build.sh               # compile + assemble Stretchy.app
 ├── make-icons.sh          # regenerate Stretchy.icns + menubar.png from SVG
+├── make-readme-image.sh   # regenerate docs/exercises.png from moves.json
 ├── moves.json             # exercise catalogue (editable)
 ├── web/player.html        # character page template
 ├── mochi/

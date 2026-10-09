@@ -14,3 +14,4 @@ icon.svg
 
 # macOS cruft
 .DS_Store
+tools/autocrop
