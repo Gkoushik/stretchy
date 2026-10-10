@@ -33,14 +33,34 @@ Sitting at a computer all day is rough on your neck, shoulders, and eyes. Stretc
 - **Live countdown** — the menu shows the time until the next exercise.
 - Settings persist across restarts.
 
-## Requirements
+## Install
+
+1. Download **Stretchy-x.y.z.dmg** from the [latest release](https://github.com/Gkoushik/stretchy/releases/latest).
+2. Open the DMG and drag **Stretchy** into **Applications**.
+3. Open Stretchy from Applications. The character appears in your menu bar.
+
+Runs on macOS 13 or later, on both Apple Silicon and Intel Macs.
+
+**First launch:** Stretchy isn't notarized by Apple, so macOS blocks it the first time with a message that it "cannot be opened" or "cannot be verified". To allow it once:
+
+- Open **System Settings → Privacy & Security**, scroll to the message about Stretchy, and click **Open Anyway**. Or:
+- Run this in Terminal, then open the app normally:
+  ```bash
+  xattr -dr com.apple.quarantine /Applications/Stretchy.app
+  ```
+
+To start Stretchy automatically, add it under **System Settings → General → Login Items**.
+
+## Build from source
+
+### Requirements
 
 - macOS 13 or later
 - Xcode command line tools (`swiftc`, `iconutil`, `sips`) — install with `xcode-select --install`
 
 No third-party package managers. The app is pure Swift (AppKit + SwiftUI + WebKit), built with a shell script.
 
-## Build & run
+### Build & run
 
 ```bash
 ./build.sh
@@ -57,7 +77,7 @@ To regenerate the app icon and menu bar image from the Mochi SVG assets:
 
 (The committed `Stretchy.icns` and `menubar.png` already cover a normal build, so you only need this if you change the character or colors.)
 
-### Install permanently
+### Install your own build
 
 ```bash
 cp -R Stretchy.app /Applications/
@@ -117,7 +137,8 @@ Edit `moves.json`, then `./build.sh` to pick up the changes. Reordering and rela
 ```
 .
 ├── Sources/main.swift     # the whole app (AppKit + SwiftUI + WebKit)
-├── build.sh               # compile + assemble Stretchy.app
+├── build.sh               # compile (universal) + assemble Stretchy.app
+├── make-release.sh        # build the release DMG into dist/
 ├── make-icons.sh          # regenerate Stretchy.icns + menubar.png from SVG
 ├── make-readme-image.sh   # regenerate docs/demo.gif and docs/exercises.png
 ├── moves.json             # exercise catalogue (editable)

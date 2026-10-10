@@ -16,3 +16,4 @@ icon.svg
 .DS_Store
 tools/autocrop
 tools/gifrender
+dist/

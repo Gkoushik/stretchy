@@ -1,5 +1,7 @@
 #!/bin/bash
-# Build StretchReminder.app from source using swiftc (no Xcode project needed).
+#!/bin/bash
+# Build Stretchy.app from source using swiftc (no Xcode project needed).
+# Produces a universal binary (Apple Silicon + Intel). Set VERSION to stamp the bundle, e.g. VERSION=1.0.0 ./build.sh
 set -euo pipefail
 
 cd "$(dirname "$0")"
@@ -7,6 +9,8 @@ cd "$(dirname "$0")"
 APP_NAME="Stretchy"
 APP_DIR="${APP_NAME}.app"
 BUNDLE_ID="com.gannik.stretchy"
+VERSION="${VERSION:-1.0.0}"
+BUILD_NUMBER="${BUILD_NUMBER:-1}"
 RES="$APP_DIR/Contents/Resources"
 
 echo "==> Cleaning previous build"
@@ -16,15 +20,21 @@ echo "==> Creating bundle layout"
 mkdir -p "$APP_DIR/Contents/MacOS"
 mkdir -p "$RES"
 
-echo "==> Compiling Swift source"
-swiftc \
-  -swift-version 5 \
-  -O \
-  -framework AppKit \
-  -framework SwiftUI \
-  -framework WebKit \
-  -o "$APP_DIR/Contents/MacOS/$APP_NAME" \
-  Sources/main.swift
+echo "==> Compiling Swift source (arm64 + x86_64)"
+TMP_BIN="$(mktemp -d)"
+for ARCH in arm64 x86_64; do
+  swiftc \
+    -swift-version 5 \
+    -O \
+    -target "$ARCH-apple-macos13.0" \
+    -framework AppKit \
+    -framework SwiftUI \
+    -framework WebKit \
+    -o "$TMP_BIN/$APP_NAME-$ARCH" \
+    Sources/main.swift
+done
+lipo -create "$TMP_BIN/$APP_NAME-arm64" "$TMP_BIN/$APP_NAME-x86_64" -output "$APP_DIR/Contents/MacOS/$APP_NAME"
+rm -rf "$TMP_BIN"
 
 echo "==> Assembling player.html (template + Stretchy CSS + SVG body)"
 # Replace each marker in web/player.html with the contents of a file.
@@ -66,9 +76,9 @@ cat > "$APP_DIR/Contents/Info.plist" <<PLIST
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
-    <string>1.0</string>
+    <string>${VERSION}</string>
     <key>CFBundleVersion</key>
-    <string>1</string>
+    <string>${BUILD_NUMBER}</string>
     <key>LSMinimumSystemVersion</key>
     <string>13.0</string>
     <key>LSUIElement</key>
